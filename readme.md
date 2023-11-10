@@ -15,3 +15,9 @@ npm install react-router-dom react-router-bootstrap
 virtualenv myenv
 myenv\scripts\activate
 pip install django
+
+cd frontend
+npm install axios
+
+cd backend
+pip install django-cors-headers
