@@ -21,3 +21,29 @@ npm install axios
 
 cd backend
 pip install django-cors-headers
+
+pip install pillow, sau đó thêm vào setting dòng dưới, ta chỉ định xong thư mục up hình ảnh
+MEDIA_URL = '/images/'
+CORS_ALLOW_ALL_ORIGINS = True
+STATICFILES_DIRS = [
+BASE_DIR / 'static'
+]
+MEDIA_ROOT = 'static/images'
+-- trong urls.py, thêm
+from django.conf import settings
+from django.conf.urls.static import static
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+tạo serializer
+class ProductSerializer(serializers.ModelSerializer):
+class Meta:
+model = Product
+fields = '**all**'
+
+npm install redux react-redux redux-thunk redux-devtools-extension
+
+pip install djangorestframework-simplejwt
+pip install setuptools
+
+sử dụng POSTMAN
+tab HEADER, KEY = Authorization, VALUE = Bearer {api key}
