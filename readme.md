@@ -1,3 +1,7 @@
+Install react modules
+1 - cd frontend
+2 - npm install
+
 npx create-react-app frontend
 cd frontend
 npm start
