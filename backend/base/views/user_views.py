@@ -57,7 +57,6 @@ def updateUserProfile(request):
     data = request.data
 
     user.first_name = data['name']
-    user.username = data['username']
     user.email = data['email']
     
     if (data['password'] != ''):

@@ -52,7 +52,7 @@ function RegisterScreen() {
           <Form.Control
             type="name"
             required
-            placeholder="Enter your name"
+            placeholder="Enter your first name"
             value={name}
             onChange={(e) => setName(e.target.value)}
           ></Form.Control>
