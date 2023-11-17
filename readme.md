@@ -51,3 +51,5 @@ pip install setuptools
 
 sử dụng POSTMAN
 tab HEADER, KEY = Authorization, VALUE = Bearer {api key}
+
+npm run build

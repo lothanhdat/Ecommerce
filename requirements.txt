@@ -18,3 +18,4 @@ pip install djangorestframework-simplejwt
 pip install setuptools
 pip install django-cors-headers
 pip install pillow
+pip install psycopg2
