@@ -25,6 +25,7 @@ function CartScreen() {
   const qty = qtySearch ? Number(qtySearch.split("=")[1]) : 1;
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
+  const userInfo = useSelector((state) => state.userLogin);
   const { cartItems } = cart;
   console.log("cartitems:", cartItems);
   useEffect(() => {
@@ -39,7 +40,11 @@ function CartScreen() {
   };
 
   const checkoutHandler = () => {
-    navigate("/login?redirect=shipping");
+    if (Object.keys(userInfo).length === 0) {
+      navigate("/login?redirect=shipping");
+    } else {
+      navigate("/shipping");
+    }
   };
   return (
     <Row>
