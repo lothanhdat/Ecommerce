@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Product
+from .models import Product, Order, OrderItem, ShippingAddress
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -36,8 +36,43 @@ class UserSerializerWithToken(UserSerializer):
         token = RefreshToken.for_user(obj)
         return str(token.access_token)
 
-
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__' # or ['name','_id'] or exclude = ['name','_id']
+
+class ShippingAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShippingAddress
+        fields = '__all__' # or ['name','_id'] or exclude = ['name','_id']
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = '__all__'
+
+class OrderSerializer(serializers.ModelSerializer):
+    orderItems = serializers.SerializerMethodField(read_only=True)
+    shippingAddress = serializers.SerializerMethodField(read_only=True)
+    user = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Order
+        fields = '__all__'
+
+    def get_orderItems(self,obj):
+        items = obj.orderitem_set.all()
+        serializers = OrderItemSerializer(items,many=True)
+        return serializers.data
+    
+    def get_shippingAddress(self,obj):
+        try:
+            address = ShippingAddressSerializer(obj.shippingaddress,many=False).data
+        except:
+            address = False
+        return address
+
+    def get_user(self,obj):
+            user = obj.user
+            serializers = UserSerializer(user,many=False)
+            return serializers.data
