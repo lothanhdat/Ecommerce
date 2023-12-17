@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useParams } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   Row,
   Col,
@@ -18,64 +18,80 @@ import FormContainer from "../components/FormContainer";
 
 function OrderScreen() {
   const { id } = useParams();
+  const orderId = id;
   const navigate = useNavigate();
   const orderDetails = useSelector((state) => state.orderDetails);
   const { order, error, loading } = orderDetails;
   const dispatch = useDispatch();
 
-  order.itemsPrice = order.orderItems
-    .reduce((acc, item) => acc + item.price * item.qty, 0)
-    .toFixed(2);
+  if (!loading && !error) {
+    order.itemsPrice = order.orderItems
+      .reduce((acc, item) => acc + item.price * item.qty, 0)
+      .toFixed(2);
+  }
 
   useEffect(() => {
-    if (success) {
-      navigate(`/order/${order._id}`);
+    if (!order || order._id !== Number(orderId)) {
+      dispatch(getOrderDetails(orderId));
     }
   }, [order, orderId]);
-  const placeOrder = () => {
-    dispatch(
-      createOrder({
-        orderItems: cart.cartItems,
-        shippingAddress: cart.shippingAddress,
-        paymentMethod: cart.paymentMethod,
-        itemsPrice: cart.itemsPrice,
-        shippingPrice: cart.shippingPrice,
-        taxPrice: cart.taxPrice,
-        totalPrice: cart.totalPrice,
-      })
-    );
-  };
 
-  return (
+  return loading ? (
+    <Loader />
+  ) : error ? (
+    <Message variant="danger">{error}</Message>
+  ) : (
     <div>
+      <h1>Order: {order._id}</h1>
       <Row>
         <Col md={8}>
           <ListGroup variant="flush">
             <ListGroup.Item>
               <h2>Shipping</h2>
               <p>
-                <strong>Shipping: </strong>
-                {cart.shippingAddress.address}, {cart.shippingAddress.city},
-                {"   "}
-                {cart.shippingAddress.postalCode},{"   "}
-                {cart.shippingAddress.country},
+                <strong>Name:</strong> {order.user.name}
               </p>
+              <p>
+                <strong>Email:</strong>{" "}
+                <a href={`mailto:${order.user.email}`}>{order.user.email}</a>
+              </p>
+              <p>
+                <strong>Shipping: </strong>
+                {order.shippingAddress.address}, {order.shippingAddress.city},
+                {"   "}
+                {order.shippingAddress.postalCode},{"   "}
+                {order.shippingAddress.country},
+              </p>
+              {order.isDelivered ? (
+                <Message variant="success">
+                  Order is delivered on {order.deliveredAt}
+                </Message>
+              ) : (
+                <Message variant="warning">Order is not delivered</Message>
+              )}
             </ListGroup.Item>
 
             <ListGroup.Item>
               <h2>Payment Method</h2>
               <p>
                 <strong>Method: </strong>
-                {cart.paymentMethod}
+                {order.paymentMethod}
               </p>
+              {order.isPaid ? (
+                <Message variant="success">
+                  Order is paid on {order.paidAt}
+                </Message>
+              ) : (
+                <Message variant="warning">Order is not paid</Message>
+              )}
             </ListGroup.Item>
             <ListGroup.Item>
               <h2>Order Items</h2>
-              {cart.cartItems.length === 0 ? (
-                <Message variant="info">Your cart is empty</Message>
+              {order.orderItems.length === 0 ? (
+                <Message variant="info">Your order is empty</Message>
               ) : (
                 <ListGroup variant="flush">
-                  {cart.cartItems.map((item, index) => (
+                  {order.orderItems.map((item, index) => (
                     <ListGroup.Item key={index}>
                       <Row>
                         <Col md={1}>
@@ -114,43 +130,28 @@ function OrderScreen() {
               <ListGroup.Item>
                 <Row>
                   <Col>Item:</Col>
-                  <Col>${cart.itemsPrice}</Col>
+                  <Col>${order.itemsPrice}</Col>
                 </Row>
               </ListGroup.Item>
 
               <ListGroup.Item>
                 <Row>
                   <Col>Shipping:</Col>
-                  <Col>${cart.shippingPrice}</Col>
+                  <Col>${order.shippingPrice}</Col>
                 </Row>
               </ListGroup.Item>
 
               <ListGroup.Item>
                 <Row>
                   <Col>Tax:</Col>
-                  <Col>${cart.taxPrice}</Col>
+                  <Col>${order.taxPrice}</Col>
                 </Row>
               </ListGroup.Item>
 
               <ListGroup.Item>
                 <Row>
                   <Col>Total:</Col>
-                  <Col>${cart.totalPrice}</Col>
-                </Row>
-              </ListGroup.Item>
-              <ListGroup.Item>
-                {error && <Message variant="danger">{error}</Message>}
-              </ListGroup.Item>
-              <ListGroup.Item>
-                <Row>
-                  <Button
-                    type="button"
-                    className="btn-block"
-                    disabled={cart.cartItems === 0}
-                    onClick={placeOrder}
-                  >
-                    Place Order
-                  </Button>
+                  <Col>${order.totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
             </ListGroup>

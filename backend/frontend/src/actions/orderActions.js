@@ -67,7 +67,6 @@ export const getOrderDetails = (id) => async (dispatch, getState) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
-
     const { data } = await axios.get(`/api/orders/${id}/`, config);
 
     dispatch({
